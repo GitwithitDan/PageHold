@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PageHold — Browse Without the Chaos</title>
+  <meta name="description" content="PageHold holds every page until it's fully loaded. No shifts. No jumps. No chaos. Just clean, stable browsing." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ink: #0a0a0f;
+      --paper: #f5f2eb;
+      --warm: #ede8dc;
+      --accent: #1a1aff;
+      --serif: 'DM Serif Display', Georgia, serif;
+      --mono: 'DM Mono', 'Courier New', monospace;
+      --sans: 'Outfit', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 400; line-height: 1.6; overflow-x: hidden; }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035; pointer-events: none; z-index: 9999;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(245,242,235,0.88); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(10,10,15,0.08);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+    .nav-logo-mark { width: 32px; height: 32px; background: var(--ink); border-radius: 8px; display: grid; place-items: center; }
+    .nav-logo-mark svg { width: 16px; height: 16px; stroke: var(--paper); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-wordmark { font-family: var(--serif); font-size: 18px; }
+    .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+    .nav-links a { text-decoration: none; color: var(--ink); font-size: 14px; font-weight: 500; opacity: 0.45; transition: opacity .2s; }
+    .nav-links a:hover { opacity: 1; }
+    .nav-cta { background: var(--ink) !important; color: var(--paper) !important; padding: 9px 20px !important; border-radius: 99px !important; opacity: 1 !important; font-size: 13px !important; }
+    .nav-cta:hover { opacity: 0.85 !important; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; padding: 160px 48px 100px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: center; max-width: 1200px; margin: 0 auto;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink); opacity: 0.38; margin-bottom: 24px;
+    }
+    .hero-eyebrow::before { content: ''; display: block; width: 20px; height: 1px; background: currentColor; }
+    h1 { font-family: var(--serif); font-size: clamp(50px, 5.2vw, 78px); line-height: 1.01; letter-spacing: -0.02em; margin-bottom: 28px; }
+    h1 em { font-style: italic; color: var(--accent); }
+    .hero-sub { font-size: 17px; font-weight: 300; line-height: 1.65; color: rgba(10,10,15,0.55); max-width: 400px; margin-bottom: 48px; }
+    .hero-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--ink); color: var(--paper);
+      text-decoration: none; padding: 15px 28px; border-radius: 99px;
+      font-size: 15px; font-weight: 500; transition: transform .2s, box-shadow .2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(10,10,15,0.22); }
+    .btn-primary svg { width: 17px; height: 17px; fill: currentColor; }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.45; transition: opacity .2s; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+    .btn-ghost:hover { opacity: 1; }
+
+    /* BROWSER MOCK */
+    .browser-mock { background: #1a1a2e; border-radius: 16px; overflow: hidden; box-shadow: 0 40px 80px rgba(10,10,15,0.22), 0 0 0 1px rgba(255,255,255,0.05); aspect-ratio: 4/3; position: relative; }
+    .browser-chrome { background: #13131f; padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .browser-dots { display: flex; gap: 6px; }
+    .browser-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+    .browser-bar { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; height: 24px; display: flex; align-items: center; padding: 0 10px; gap: 6px; }
+    .browser-bar-url { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.25); }
+    .browser-body { position: relative; height: calc(100% - 49px); background: #0f0f18; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+    .ghost-content { position: absolute; inset: 0; padding: 24px; display: flex; flex-direction: column; gap: 10px; opacity: 0.06; }
+    .ghost-line { height: 12px; background: #fff; border-radius: 4px; }
+    .ghost-line.short { width: 55%; }
+    .ghost-line.shorter { width: 35%; }
+    .ghost-line.tall { height: 80px; width: 100%; border-radius: 8px; margin-bottom: 6px; }
+    .mock-overlay { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .mock-hourglass { width: 44px; height: 44px; background: linear-gradient(135deg, #1e3a8a, #4c1d95); border-radius: 12px; display: grid; place-items: center; box-shadow: 0 0 40px rgba(99,102,241,0.28); }
+    .mock-hourglass svg { width: 22px; height: 22px; stroke: #a5b4fc; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; animation: hg-rock 3s ease-in-out infinite; }
+    @keyframes hg-rock { 0%,40%{transform:rotate(0deg)} 50%,90%{transform:rotate(180deg)} 100%{transform:rotate(180deg)} }
+    .mock-bar-wrap { width: 140px; height: 3px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+    .mock-bar { height: 100%; background: linear-gradient(90deg,#6366f1,#a78bfa); border-radius: 99px; animation: prog 3s ease-in-out infinite; }
+    @keyframes prog { 0%{width:0%} 60%{width:85%} 90%{width:100%} 100%{width:100%;opacity:0} }
+    .mock-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); }
+    .mock-reveal { position: absolute; inset: 0; background: #fff; display: flex; flex-direction: column; padding: 20px; gap: 8px; animation: rev 3s ease-in-out infinite; opacity: 0; }
+    @keyframes rev { 0%,80%{opacity:0;transform:translateY(5px)} 90%,95%{opacity:1;transform:translateY(0)} 100%{opacity:0} }
+    .reveal-line { height: 11px; background: #e5e7eb; border-radius: 4px; }
+    .reveal-line.h { background: #374151; width: 70%; height: 16px; }
+    .reveal-line.s { width: 45%; }
+    .reveal-img { height: 70px; background: linear-gradient(135deg,#dbeafe,#ede9fe); border-radius: 8px; margin-bottom: 4px; }
+
+    /* STATS */
+    .stats-bar { background: var(--ink); color: var(--paper); padding: 20px 48px; }
+    .stats-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+    .stat { display: flex; align-items: baseline; gap: 10px; }
+    .stat-num { font-family: var(--serif); font-size: 28px; letter-spacing: -0.02em; }
+    .stat-label { font-size: 13px; opacity: 0.38; }
+    .stats-div { width: 1px; height: 32px; background: rgba(245,242,235,0.1); }
+
+    /* SECTION */
+    .section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
+    .section-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); opacity: 0.32; margin-bottom: 16px; }
+    h2 { font-family: var(--serif); font-size: clamp(34px, 3.8vw, 54px); line-height: 1.06; letter-spacing: -0.02em; margin-bottom: 60px; }
+    h2 em { font-style: italic; }
+
+    /* STEPS */
+    .steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; }
+    .step { background: var(--warm); padding: 44px 36px; }
+    .step:first-child { border-radius: 16px 0 0 16px; }
+    .step:last-child { border-radius: 0 16px 16px 0; }
+    .step-num { font-family: var(--serif); font-size: 72px; line-height: 1; color: rgba(10,10,15,0.07); margin-bottom: 20px; letter-spacing: -0.04em; }
+    .step-icon { width: 42px; height: 42px; background: var(--ink); border-radius: 10px; display: grid; place-items: center; margin-bottom: 18px; }
+    .step-icon svg { width: 19px; height: 19px; stroke: var(--paper); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .step h3 { font-family: var(--serif); font-size: 21px; margin-bottom: 10px; }
+    .step p { font-size: 14px; font-weight: 300; color: rgba(10,10,15,0.52); line-height: 1.65; }
+
+    /* CONTRAST */
+    .contrast { background: var(--ink); color: var(--paper); padding: 100px 48px; }
+    .contrast-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .contrast .section-label { color: var(--paper); opacity: 0.28; }
+    .contrast h2 { color: var(--paper); margin-bottom: 28px; }
+    .contrast p { font-size: 15px; font-weight: 300; line-height: 1.7; color: rgba(245,242,235,0.5); }
+    .plist { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+    .pitem { display: flex; align-items: flex-start; gap: 14px; padding: 18px 20px; background: rgba(245,242,235,0.04); border: 1px solid rgba(245,242,235,0.07); border-radius: 12px; }
+    .pitem-icon { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex-shrink: 0; margin-top: 2px; }
+    .pitem-icon.bad { background: rgba(239,68,68,0.15); }
+    .pitem-icon.good { background: rgba(99,102,241,0.2); }
+    .pitem-icon svg { width: 13px; height: 13px; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    .pitem-icon.bad svg { stroke: #f87171; }
+    .pitem-icon.good svg { stroke: #a5b4fc; }
+    .pitem-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 3px; color: rgba(245,242,235,0.88); }
+    .pitem-text span { font-size: 12px; color: rgba(245,242,235,0.38); font-weight: 300; }
+
+    /* DOWNLOAD */
+    .dl-section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; text-align: center; }
+    .dl-section h2 { margin-bottom: 14px; }
+    .dl-section .sub { font-size: 17px; font-weight: 300; color: rgba(10,10,15,0.48); margin-bottom: 52px; }
+    .free-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.1); color: #4338ca; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 99px; margin-bottom: 18px; }
+    .free-badge::before { content: '◆'; font-size: 8px; }
+    .dl-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; max-width: 720px; margin: 0 auto; }
+    .dl-card { background: var(--warm); border: 1px solid rgba(10,10,15,0.08); border-radius: 16px; padding: 30px 22px; text-decoration: none; color: var(--ink); transition: transform .2s, box-shadow .2s, border-color .2s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .dl-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(10,10,15,0.11); border-color: rgba(10,10,15,0.18); }
+    .dl-card-icon { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; margin-bottom: 4px; }
+    .dc-edge { background: #e8f0fe; }
+    .dc-chrome { background: #fef9c3; }
+    .dc-ff { background: #fff0e6; }
+    .dl-card strong { font-size: 14px; font-weight: 600; display: block; }
+    .dl-card span { font-size: 11px; color: rgba(10,10,15,0.38); font-family: var(--mono); }
+
+    /* FOOTER */
+    footer { border-top: 1px solid rgba(10,10,15,0.08); padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: rgba(10,10,15,0.32); }
+    footer a { color: inherit; text-decoration: none; }
+    footer a:hover { color: var(--ink); }
+
+    /* ANIMATIONS */
+    .fade-up { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .fade-up:nth-child(2) { transition-delay: 0.1s; }
+    .fade-up:nth-child(3) { transition-delay: 0.2s; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; padding: 110px 20px 60px; gap: 40px; }
+      .stats-inner { flex-wrap: wrap; gap: 20px; }
+      .stats-div { display: none; }
+      .section { padding: 72px 20px; }
+      .steps { grid-template-columns: 1fr; }
+      .step:first-child { border-radius: 16px 16px 0 0; }
+      .step:last-child { border-radius: 0 0 16px 16px; }
+      .contrast { padding: 72px 20px; }
+      .contrast-inner { grid-template-columns: 1fr; gap: 48px; }
+      .dl-section { padding: 72px 20px; }
+      .dl-cards { grid-template-columns: 1fr; max-width: 300px; }
+      footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M5 2h14M5 22h14M7 2v5l5 5-5 5v5M17 2v5l-5 5 5 5v5"/></svg>
+    </div>
+    <span class="nav-wordmark">PageHold</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#why">Why</a></li>
+    <li><a href="#download" class="nav-cta">Install Free →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-eyebrow">Free browser extension</div>
+    <h1>Browse without<br>the <em>chaos.</em></h1>
+    <p class="hero-sub">PageHold holds every page behind a clean loading screen until it's fully ready. No more content jumping, shifting, or rearranging under your cursor.</p>
+    <div class="hero-actions">
+      <a href="#download" class="btn-primary">
+        <svg viewBox="0 0 24 24"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/></svg>
+        Install Free
+      </a>
+      <a href="#how" class="btn-ghost">See how it works</a>
+    </div>
+  </div>
+
+  <div>
+    <div class="browser-mock">
+      <div class="browser-chrome">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-bar">
+          <span class="browser-bar-url">anywebsite.com</span>
+        </div>
+      </div>
+      <div class="browser-body">
+        <div class="ghost-content">
+          <div class="ghost-line tall"></div>
+          <div class="ghost-line"></div>
+          <div class="ghost-line short"></div>
+          <div class="ghost-line"></div>
+          <div class="ghost-line shorter"></div>
+        </div>
+        <div class="mock-overlay">
+          <div class="mock-hourglass">
+            <svg viewBox="0 0 24 24"><path d="M5 2h14M5 22h14M7 2v5l5 5-5 5v5M17 2v5l-5 5 5 5v5"/></svg>
+          </div>
+          <div class="mock-bar-wrap"><div class="mock-bar"></div></div>
+          <div class="mock-label">Loading…</div>
+        </div>
+        <div class="mock-reveal">
+          <div class="reveal-img"></div>
+          <div class="reveal-line h"></div>
+          <div class="reveal-line"></div>
+          <div class="reveal-line s"></div>
+          <div class="reveal-line"></div>
+          <div class="reveal-line s"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Free, forever</span></div>
+    <div class="stats-div"></div>
+    <div class="stat"><span class="stat-num">0</span><span class="stat-label">Data collected</span></div>
+    <div class="stats-div"></div>
+    <div class="stat"><span class="stat-num">3</span><span class="stat-label">Browsers supported</span></div>
+    <div class="stats-div"></div>
+    <div class="stat"><span class="stat-num">8s</span><span class="stat-label">Max hold on any page</span></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="section-label">How it works</div>
+  <h2>Three steps.<br><em>Invisible by design.</em></h2>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-num">01</div>
+      <div class="step-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <h3>Intercepts at start</h3>
+      <p>PageHold injects before any content renders — at the very first moment of a page load. Nothing gets painted until it's all ready.</p>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">02</div>
+      <div class="step-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <h3>Holds the overlay</h3>
+      <p>A clean loading screen covers the page. Images, ads, scripts — everything loads silently behind it while you see a calm progress bar.</p>
+    </div>
+    <div class="step fade-up">
+      <div class="step-num">03</div>
+      <div class="step-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <h3>Reveals all at once</h3>
+      <p>The moment everything is ready, the overlay fades and the fully-loaded page appears in a single clean reveal. No jumps. No chaos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<div class="contrast" id="why">
+  <div class="contrast-inner">
+    <div>
+      <div class="section-label">The problem</div>
+      <h2>Pages used to<br><em>stay still.</em></h2>
+      <p>Modern web pages are assembled from dozens of sources simultaneously — ads, images, fonts, scripts, trackers. Each loads at a different speed, shoving content around as it arrives.</p>
+      <ul class="plist">
+        <li class="pitem">
+          <div class="pitem-icon bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          <div class="pitem-text"><strong>You click the wrong thing</strong><span>A button shifts just as your finger lands on it</span></div>
+        </li>
+        <li class="pitem">
+          <div class="pitem-icon bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          <div class="pitem-text"><strong>Your reading position jumps</strong><span>An ad loads above your text and pushes everything down</span></div>
+        </li>
+        <li class="pitem">
+          <div class="pitem-icon bad"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+          <div class="pitem-text"><strong>The layout breaks mid-read</strong><span>Images pop in, columns resize, everything reflows</span></div>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <div class="section-label">The solution</div>
+      <h2>One extension.<br><em>Complete calm.</em></h2>
+      <p>PageHold enforces a simple rule: nothing shows until everything is ready. You wait one extra second. In return, you never deal with layout chaos again.</p>
+      <ul class="plist">
+        <li class="pitem">
+          <div class="pitem-icon good"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="pitem-text"><strong>Pages land fully-formed</strong><span>Every element in its final position from the first frame</span></div>
+        </li>
+        <li class="pitem">
+          <div class="pitem-icon good"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="pitem-text"><strong>Zero configuration</strong><span>Install and forget. Works on every site automatically</span></div>
+        </li>
+        <li class="pitem">
+          <div class="pitem-icon good"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="pitem-text"><strong>Completely private</strong><span>No analytics, no tracking, no data leaves your browser</span></div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- DOWNLOAD -->
+<section class="dl-section" id="download">
+  <div class="free-badge">Always free</div>
+  <h2>Get PageHold<br><em>in seconds.</em></h2>
+  <p class="sub">Available for every major browser. No account. No payment. No catch.</p>
+  <div class="dl-cards">
+    <a href="#" class="dl-card">
+      <div class="dl-card-icon dc-edge">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M28 18c0 6.627-5.373 12-12 12A12 12 0 014.929 9.5C6.5 6.5 9.5 4.5 13 4.5c4.418 0 8 3.806 8 8.5 0 2.485-.895 4-2 4s-2-1-2-3c0-2.761-1.567-5-3.5-5C11.567 9 10 11.239 10 14c0 4.418 3.134 8 7 8 5.523 0 10-4.925 10-11" stroke="#0078D4" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <strong>Microsoft Edge</strong>
+      <span>Edge Add-ons</span>
+    </a>
+    <a href="#" class="dl-card">
+      <div class="dl-card-icon dc-chrome">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="6" fill="#4285F4"/>
+          <path d="M16 10h12a12 12 0 010 12" stroke="#EA4335" stroke-width="4" stroke-linecap="round"/>
+          <path d="M22 22L16 28A12 12 0 014 10" stroke="#FBBC04" stroke-width="4" stroke-linecap="round"/>
+          <path d="M10 22L4 10a12 12 0 0112-6" stroke="#34A853" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <strong>Google Chrome</strong>
+      <span>Chrome Web Store</span>
+    </a>
+    <a href="#" class="dl-card">
+      <div class="dl-card-icon dc-ff">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="11" fill="#FF6B00" opacity="0.15"/>
+          <circle cx="16" cy="16" r="7" fill="#FF6B00" opacity="0.8"/>
+          <path d="M8 11c2-5 8-7 13-4" stroke="#FF4500" stroke-width="2" stroke-linecap="round"/>
+          <path d="M24 21c-2 5-8 7-13 4" stroke="#FF4500" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <strong>Firefox</strong>
+      <span>Firefox Add-ons</span>
+    </a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 PageHold. Made with intention.</span>
+  <span>Free &amp; open source &nbsp;·&nbsp; No data collected &nbsp;·&nbsp; <a href="#">Privacy policy</a></span>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
