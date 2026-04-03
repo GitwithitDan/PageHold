@@ -29,13 +29,7 @@
     }
 
     /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 20px 48px;
-      background: rgba(245,242,235,0.88); backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(10,10,15,0.08);
-    }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: rgba(245,242,235,0.88); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(10,10,15,0.08); }
     .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
     .nav-logo-mark { width: 32px; height: 32px; background: var(--ink); border-radius: 8px; display: grid; place-items: center; }
     .nav-logo-mark svg { width: 16px; height: 16px; stroke: var(--paper); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -47,27 +41,14 @@
     .nav-cta:hover { opacity: 0.85 !important; }
 
     /* HERO */
-    .hero {
-      min-height: 100vh; padding: 160px 48px 100px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
-      align-items: center; max-width: 1200px; margin: 0 auto;
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
-      text-transform: uppercase; color: var(--ink); opacity: 0.38; margin-bottom: 24px;
-    }
+    .hero { min-height: 100vh; padding: 160px 48px 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1200px; margin: 0 auto; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); opacity: 0.38; margin-bottom: 24px; }
     .hero-eyebrow::before { content: ''; display: block; width: 20px; height: 1px; background: currentColor; }
     h1 { font-family: var(--serif); font-size: clamp(50px, 5.2vw, 78px); line-height: 1.01; letter-spacing: -0.02em; margin-bottom: 28px; }
     h1 em { font-style: italic; color: var(--accent); }
     .hero-sub { font-size: 17px; font-weight: 300; line-height: 1.65; color: rgba(10,10,15,0.55); max-width: 400px; margin-bottom: 48px; }
     .hero-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--ink); color: var(--paper);
-      text-decoration: none; padding: 15px 28px; border-radius: 99px;
-      font-size: 15px; font-weight: 500; transition: transform .2s, box-shadow .2s;
-    }
+    .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: var(--ink); color: var(--paper); text-decoration: none; padding: 15px 28px; border-radius: 99px; font-size: 15px; font-weight: 500; transition: transform .2s, box-shadow .2s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(10,10,15,0.22); }
     .btn-primary svg { width: 17px; height: 17px; fill: currentColor; }
     .btn-ghost { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 500; opacity: 0.45; transition: opacity .2s; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
@@ -78,7 +59,7 @@
     .browser-chrome { background: #13131f; padding: 12px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
     .browser-dots { display: flex; gap: 6px; }
     .browser-dots span { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.12); }
-    .browser-bar { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; height: 24px; display: flex; align-items: center; padding: 0 10px; gap: 6px; }
+    .browser-bar { flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px; height: 24px; display: flex; align-items: center; padding: 0 10px; }
     .browser-bar-url { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,0.25); }
     .browser-body { position: relative; height: calc(100% - 49px); background: #0f0f18; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
     .ghost-content { position: absolute; inset: 0; padding: 24px; display: flex; flex-direction: column; gap: 10px; opacity: 0.06; }
@@ -143,8 +124,18 @@
     .pitem-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 3px; color: rgba(245,242,235,0.88); }
     .pitem-text span { font-size: 12px; color: rgba(245,242,235,0.38); font-weight: 300; }
 
+    /* CHANGELOG */
+    .changelog { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
+    .changelog h2 { margin-bottom: 32px; }
+    .changelog-entry { display: flex; gap: 24px; padding: 24px 0; border-top: 1px solid rgba(10,10,15,0.08); }
+    .changelog-entry:last-child { border-bottom: 1px solid rgba(10,10,15,0.08); }
+    .changelog-version { font-family: var(--mono); font-size: 12px; color: var(--accent); min-width: 48px; padding-top: 2px; }
+    .changelog-items { display: flex; flex-direction: column; gap: 6px; }
+    .changelog-item { font-size: 14px; font-weight: 300; color: rgba(10,10,15,0.65); line-height: 1.5; }
+    .changelog-item::before { content: '—'; margin-right: 8px; opacity: 0.3; }
+
     /* DOWNLOAD */
-    .dl-section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; text-align: center; }
+    .dl-section { padding: 80px 48px 120px; max-width: 1200px; margin: 0 auto; text-align: center; }
     .dl-section h2 { margin-bottom: 14px; }
     .dl-section .sub { font-size: 17px; font-weight: 300; color: rgba(10,10,15,0.48); margin-bottom: 52px; }
     .free-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.1); color: #4338ca; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 14px; border-radius: 99px; margin-bottom: 18px; }
@@ -183,7 +174,8 @@
       .step:last-child { border-radius: 0 0 16px 16px; }
       .contrast { padding: 72px 20px; }
       .contrast-inner { grid-template-columns: 1fr; gap: 48px; }
-      .dl-section { padding: 72px 20px; }
+      .changelog { padding: 60px 20px; }
+      .dl-section { padding: 60px 20px 80px; }
       .dl-cards { grid-template-columns: 1fr; max-width: 300px; }
       footer { padding: 20px; flex-direction: column; gap: 10px; text-align: center; }
     }
@@ -201,6 +193,7 @@
   <ul class="nav-links">
     <li><a href="#how">How it works</a></li>
     <li><a href="#why">Why</a></li>
+    <li><a href="#changelog">Changelog</a></li>
     <li><a href="#download" class="nav-cta">Install Free →</a></li>
   </ul>
 </nav>
@@ -219,14 +212,11 @@
       <a href="#how" class="btn-ghost">See how it works</a>
     </div>
   </div>
-
   <div>
     <div class="browser-mock">
       <div class="browser-chrome">
         <div class="browser-dots"><span></span><span></span><span></span></div>
-        <div class="browser-bar">
-          <span class="browser-bar-url">anywebsite.com</span>
-        </div>
+        <div class="browser-bar"><span class="browser-bar-url">anywebsite.com</span></div>
       </div>
       <div class="browser-body">
         <div class="ghost-content">
@@ -265,7 +255,7 @@
     <div class="stats-div"></div>
     <div class="stat"><span class="stat-num">3</span><span class="stat-label">Browsers supported</span></div>
     <div class="stats-div"></div>
-    <div class="stat"><span class="stat-num">8s</span><span class="stat-label">Max hold on any page</span></div>
+    <div class="stat"><span class="stat-num">3s</span><span class="stat-label">Max hold on any page</span></div>
   </div>
 </div>
 
@@ -278,7 +268,7 @@
       <div class="step-num">01</div>
       <div class="step-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
       <h3>Intercepts at start</h3>
-      <p>PageHold injects before any content renders — at the very first moment of a page load. Nothing gets painted until it's all ready.</p>
+      <p>PageHold injects before any content renders — at the very first moment of a page load. Nothing gets painted until the DOM is ready.</p>
     </div>
     <div class="step fade-up">
       <div class="step-num">02</div>
@@ -290,7 +280,7 @@
       <div class="step-num">03</div>
       <div class="step-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <h3>Reveals all at once</h3>
-      <p>The moment everything is ready, the overlay fades and the fully-loaded page appears in a single clean reveal. No jumps. No chaos.</p>
+      <p>The moment the DOM is ready, the overlay fades and the page appears in a single clean reveal. No jumps. No chaos.</p>
     </div>
   </div>
 </section>
@@ -320,7 +310,7 @@
     <div>
       <div class="section-label">The solution</div>
       <h2>One extension.<br><em>Complete calm.</em></h2>
-      <p>PageHold enforces a simple rule: nothing shows until everything is ready. You wait one extra second. In return, you never deal with layout chaos again.</p>
+      <p>PageHold enforces a simple rule: nothing shows until the page is ready. You wait one moment. In return, you never deal with layout chaos again.</p>
       <ul class="plist">
         <li class="pitem">
           <div class="pitem-icon good"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -328,7 +318,7 @@
         </li>
         <li class="pitem">
           <div class="pitem-icon good"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <div class="pitem-text"><strong>Zero configuration</strong><span>Install and forget. Works on every site automatically</span></div>
+          <div class="pitem-text"><strong>Smart enough to stay out of the way</strong><span>Automatically skips localhost so it never breaks your apps</span></div>
         </li>
         <li class="pitem">
           <div class="pitem-icon good"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -338,6 +328,30 @@
     </div>
   </div>
 </div>
+
+<!-- CHANGELOG -->
+<section class="changelog" id="changelog">
+  <div class="section-label">Release notes</div>
+  <h2>What's<br><em>changed.</em></h2>
+
+  <div class="changelog-entry">
+    <div class="changelog-version">v1.1</div>
+    <div class="changelog-items">
+      <div class="changelog-item">Releases hold at DOMContentLoaded instead of window.load — prevents interference with React, Radix, and other SPA frameworks</div>
+      <div class="changelog-item">Safety net reduced from 8 seconds to 3 seconds</div>
+      <div class="changelog-item">Automatically skips localhost, 127.0.0.1, and .local addresses so it never blocks local development</div>
+    </div>
+  </div>
+
+  <div class="changelog-entry">
+    <div class="changelog-version">v1.0</div>
+    <div class="changelog-items">
+      <div class="changelog-item">Initial release — layout stabilizer with animated overlay</div>
+      <div class="changelog-item">Chrome, Edge, and Firefox support</div>
+      <div class="changelog-item">On/off toggle in popup</div>
+    </div>
+  </div>
+</section>
 
 <!-- DOWNLOAD -->
 <section class="dl-section" id="download">
@@ -394,4 +408,3 @@
 </script>
 </body>
 </html>
-
