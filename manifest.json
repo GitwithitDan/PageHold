@@ -9,7 +9,6 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content/stabilizer.js"],
-      "css": ["content/stabilizer.css"],
       "run_at": "document_start",
       "all_frames": false
     }
