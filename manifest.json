@@ -1,38 +1,33 @@
 {
   "manifest_version": 3,
   "name": "PageHold",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "Browse without the chaos. Holds pages until fully loaded—no shifts, no jumps.",
-  "permissions": [
-    "webNavigation",
-    "storage"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
+  "permissions": ["storage"],
+  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["content/stabilizer.js"],
+      "css": ["content/stabilizer.css"],
       "run_at": "document_start",
       "all_frames": false
     }
   ],
-  "icons": {
-    "16": "icon16.png",
-    "48": "icon48.png",
-    "128": "icon128.png"
+  "background": {
+    "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "popup/popup.html",
     "default_icon": {
-      "16": "icon16.png",
-      "48": "icon48.png",
-      "128": "icon128.png"
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
     }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
