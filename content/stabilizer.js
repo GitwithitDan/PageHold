@@ -1,13 +1,6 @@
 /**
  * PageHold — Layout Stabilizer v1.3
- *
- * Changes from v1.2:
- * - Added multiple safety mechanisms to prevent stuck overlay
- * - Fallback timers at 3s, 5s, and 8s (progressive safety net)
- * - Visibility change detection (tab switching forces reveal)
- * - User interaction detection (click/key forces reveal after 2s)
- * - MutationObserver for DOM changes (detects heavy rendering)
- * - Performance observer for layout stability
+ * Fixed: CSS now inlined to prevent race condition with separate CSS file
  */
 
 (function PageHold() {
@@ -43,7 +36,84 @@
   let progress = 0;
   let rafId = null;
 
-  // ── 1. Inject overlay as soon as <body> exists ──────────────────────────
+  // ── 1. Inject CSS FIRST (inline to guarantee it loads before overlay) ───
+  const styleElement = document.createElement('style');
+  styleElement.id = 'pagehold-styles';
+  styleElement.textContent = `
+    #pagehold-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      background: #2a2a2e;
+      display: grid;
+      place-items: center;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    #pagehold-overlay.pagehold-reveal {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pagehold-logo {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #1e3a8a, #4c1d95);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.28);
+      margin-bottom: 20px;
+    }
+
+    .pagehold-logo svg {
+      width: 32px;
+      height: 32px;
+      stroke: #a5b4fc;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      animation: pagehold-rock 3s ease-in-out infinite;
+    }
+
+    @keyframes pagehold-rock {
+      0%, 40% { transform: rotate(0deg); }
+      50%, 90% { transform: rotate(180deg); }
+      100% { transform: rotate(180deg); }
+    }
+
+    .pagehold-bar-wrap {
+      width: 160px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .pagehold-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #a78bfa);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    .pagehold-label {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+    }
+  `;
+
+  // Inject styles immediately
+  (document.head || document.documentElement).appendChild(styleElement);
+
+  // ── 2. Create overlay element AFTER styles are injected ─────────────────
   function createOverlay() {
     if (document.getElementById('pagehold-overlay')) return;
     
@@ -75,7 +145,7 @@
     }).observe(document.documentElement, { childList: true });
   }
 
-  // ── 2. Progress simulation ──────────────────────────────────────────────
+  // ── 3. Progress simulation ──────────────────────────────────────────────
   function setProgress(pct, label) {
     progress = Math.max(progress, pct);
     const bar = document.getElementById('pagehold-bar');
@@ -99,7 +169,7 @@
 
   startCrawl(60);
 
-  // ── 3. Reveal function with safety checks ───────────────────────────────
+  // ── 4. Reveal function with safety checks ───────────────────────────────
   function reveal(reason = 'unknown') {
     if (revealed) return;
     revealed = true;
@@ -122,17 +192,22 @@
         overlay.classList.add('pagehold-reveal');
         overlay.addEventListener('transitionend', () => {
           if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+          // Also remove the style element
+          const styles = document.getElementById('pagehold-styles');
+          if (styles && styles.parentNode) styles.parentNode.removeChild(styles);
         }, { once: true });
         
         // Backup removal in case transitionend doesn't fire
         setTimeout(() => {
           if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+          const styles = document.getElementById('pagehold-styles');
+          if (styles && styles.parentNode) styles.parentNode.removeChild(styles);
         }, 500);
       }
     }, 180);
   }
 
-  // ── 4. Multiple safety timers (progressive fallback) ────────────────────
+  // ── 5. Multiple safety timers (progressive fallback) ────────────────────
   const primaryTimer = setTimeout(() => {
     if (!revealed) {
       setProgress(100, 'Ready');
@@ -154,7 +229,7 @@
     }
   }, TIMERS.ABSOLUTE);
 
-  // ── 5. DOM ready detection ──────────────────────────────────────────────
+  // ── 6. DOM ready detection ──────────────────────────────────────────────
   if (document.readyState !== 'loading') {
     // DOM already ready
     reveal('dom-already-ready');
@@ -165,7 +240,7 @@
     }, { once: true });
   }
 
-  // ── 6. Visibility change detection (tab switching) ──────────────────────
+  // ── 7. Visibility change detection (tab switching) ──────────────────────
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && !revealed) {
       // User switched back to tab - reveal immediately
@@ -173,7 +248,7 @@
     }
   }, { once: true });
 
-  // ── 7. User interaction detection ───────────────────────────────────────
+  // ── 8. User interaction detection ───────────────────────────────────────
   let interactionTimer = null;
   
   function handleInteraction() {
@@ -192,14 +267,14 @@
   document.addEventListener('click', handleInteraction, { once: true, capture: true });
   document.addEventListener('keydown', handleInteraction, { once: true, capture: true });
 
-  // ── 8. MutationObserver for heavy DOM changes ───────────────────────────
+  // ── 9. MutationObserver for heavy DOM changes ───────────────────────────
   let mutationObs = null;
   let mutationCount = 0;
   
   if (document.body) {
     mutationObs = new MutationObserver(() => {
       mutationCount++;
-      // If we see 50+ mutations, page is actively rendering - check if we should reveal
+      // If we see 50+ mutations, page is actively rendering
       if (mutationCount > 50 && !revealed) {
         setProgress(70, 'Rendering…');
       }
@@ -215,7 +290,7 @@
     });
   }
 
-  // ── 9. Performance observer for layout stability ────────────────────────
+  // ── 10. Performance observer for layout stability ───────────────────────
   let perfObs = null;
   
   if ('PerformanceObserver' in window) {
@@ -234,7 +309,7 @@
     }
   }
 
-  // ── 10. Listen for popup toggle ─────────────────────────────────────────
+  // ── 11. Listen for popup toggle ─────────────────────────────────────────
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg.type === 'PAGEHOLD_DISABLE') {
       localStorage.setItem(DISABLED_KEY, '1');
