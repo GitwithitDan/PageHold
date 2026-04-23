@@ -335,6 +335,18 @@
   <h2>What's<br><em>changed.</em></h2>
 
   <div class="changelog-entry">
+    <div class="changelog-version">v1.3</div>
+    <div class="changelog-items">
+      <div class="changelog-item">Added intelligent auto-check system that monitors page state every 500ms</div>
+      <div class="changelog-item">Detects audio playback — if audio plays for >100ms, overlay clears automatically</div>
+      <div class="changelog-item">Monitors user interaction — clicks, touches, scrolling trigger overlay removal after 2 seconds</div>
+      <div class="changelog-item">Multiple fallback triggers prevent overlay from getting stuck (visibility changes, interactive content detection)</div>
+      <div class="changelog-item">Progress bar updates in real-time to show loading status</div>
+      <div class="changelog-item">Diagnostic logging helps identify why overlay cleared (for debugging)</div>
+    </div>
+  </div>
+
+  <div class="changelog-entry">
     <div class="changelog-version">v1.2</div>
     <div class="changelog-items">
       <div class="changelog-item">Overlay is now purely cosmetic — the page body is never hidden or blocked</div>
